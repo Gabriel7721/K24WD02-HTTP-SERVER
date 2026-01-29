@@ -34,9 +34,26 @@ const server = createServer(async (req, res) => {
             }
             break;
         case "GET /favicon.ico":
-            const icon = readFile("../public/favicon.ico");
+            const icon = await readFile("./public/favicon.ico");
             res.writeHead(200, { "Content-Type": "image/x-icon" });
             res.end(icon);
+            break;
+        case "PUT /users":
+            try {
+                const data = await parseBody(req); // data === Object
+                const newUser = {
+                    id: nextId++,
+                    name: data.name,
+                    email: data.email,
+                };
+                users.push(newUser);
+                res.writeHead(201);
+                res.end(JSON.stringify(newUser));
+            }
+            catch (error) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ message: "Invalid JSON" }));
+            }
             break;
         default:
             res.writeHead(405, { "Content-Type": "application/json" });
@@ -69,5 +86,17 @@ function parseBody(req) {
             }
         });
     });
+}
+function getIdFromParam(path) {
+    if (!path)
+        return null;
+    // localhost:9999/users/1 ---> ["localhost:9999","users","1"] --> lấy Number("1") = 1
+    const parts = path.split("/");
+    if (parts.length !== 3)
+        return null;
+    if (parts[1] !== "users")
+        return null;
+    const id = Number(parts[2]);
+    return Number.isFinite(id) ? id : null;
 }
 //# sourceMappingURL=index.js.map
