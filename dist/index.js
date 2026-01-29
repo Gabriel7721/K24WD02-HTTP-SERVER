@@ -15,6 +15,23 @@ const server = createServer(async (req, res) => {
             res.writeHead(200);
             res.end(JSON.stringify(users));
             break;
+        case "POST /users":
+            try {
+                const data = await parseBody(req); // data === Object
+                const newUser = {
+                    id: nextId++,
+                    name: data.name,
+                    email: data.email,
+                };
+                users.push(newUser);
+                res.writeHead(201);
+                res.end(JSON.stringify(newUser));
+            }
+            catch (error) {
+                res.writeHead(400);
+                res.end(JSON.stringify({ message: "Invalid JSON" }));
+            }
+            break;
         default:
             res.writeHead(405, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Method not allowed" }));
