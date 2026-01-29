@@ -1,4 +1,5 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { readFile } from "node:fs/promises";
 const hostName = "192.168.20.142";
 const port = 9999;
 const server = createServer(async (req, res) => {
@@ -31,6 +32,11 @@ const server = createServer(async (req, res) => {
                 res.writeHead(400);
                 res.end(JSON.stringify({ message: "Invalid JSON" }));
             }
+            break;
+        case "GET /favicon.ico":
+            const icon = readFile("../public/favicon.ico");
+            res.writeHead(200, { "Content-Type": "image/x-icon" });
+            res.end(icon);
             break;
         default:
             res.writeHead(405, { "Content-Type": "application/json" });
