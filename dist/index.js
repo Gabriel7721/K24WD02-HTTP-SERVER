@@ -99,4 +99,11 @@ function getIdFromParam(path) {
     const id = Number(parts[2]);
     return Number.isFinite(id) ? id : null;
 }
+function normalizeRoute(method, path) {
+    const id = getIdFromParam(path);
+    if (id !== null) {
+        return `${method} /users/:id`;
+    }
+    return `${method} ${path}`;
+}
 //# sourceMappingURL=index.js.map

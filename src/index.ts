@@ -111,3 +111,13 @@ function getIdFromParam(path?: string): number | null {
   const id = Number(parts[2]);
   return Number.isFinite(id) ? id : null;
 }
+
+function normalizeRoute(method?: string, path?: string): string {
+  const id = getIdFromParam(path);
+
+  if (id !== null) {
+    return `${method} /users/:id`;
+  }
+  
+  return `${method} ${path}`;
+}
