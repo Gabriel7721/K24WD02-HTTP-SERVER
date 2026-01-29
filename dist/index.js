@@ -60,6 +60,18 @@ const server = createServer(async (req, res) => {
                 res.end(JSON.stringify({ message: "Invalid JSON" }));
             }
             break;
+        case "DELETE /users/:id":
+            const delId = getIdFromParam(req.url);
+            const index = users.findIndex((u) => u.id === delId);
+            if (index === -1) {
+                res.writeHead(404);
+                res.end(JSON.stringify({ message: "User not found" }));
+                return;
+            }
+            users.splice(index, 1);
+            res.writeHead(200);
+            res.end(JSON.stringify({ message: `Deleted user ID: ${delId}` }));
+            break;
         default:
             res.writeHead(405, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Method not allowed" }));
