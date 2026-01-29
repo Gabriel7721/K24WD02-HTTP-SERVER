@@ -15,7 +15,10 @@ const server = createServer(
     );
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-    switch (`${req.method} ${req.url}`) {
+    const path = req.url;
+    const route = normalizeRoute(req.method, path);
+
+    switch (route) {
       case "GET /":
         res.writeHead(200);
         res.end("Welcome to my http server!");
@@ -46,22 +49,27 @@ const server = createServer(
         res.writeHead(200, { "Content-Type": "image/x-icon" });
         res.end(icon);
         break;
-      case "PUT /users":
+      case "PUT /users/:id":
+        const id = getIdFromParam(req.url);
         try {
           const data = await parseBody(req); // data === Object
-          const newUser: User = {
-            id: nextId++,
-            name: data.name,
-            email: data.email,
-          };
-          users.push(newUser);
-          res.writeHead(201);
-          res.end(JSON.stringify(newUser));
+          const user = users.find((u) => u.id === id);
+
+          if (!user) {
+            res.writeHead(404);
+            res.end(JSON.stringify({ message: "User not found" }));
+            return;
+          }
+
+          user.name = data.name || user.name;
+          user.email = data.email || user.email;
+
+          res.writeHead(200);
+          res.end(JSON.stringify(user));
         } catch (error) {
           res.writeHead(400);
           res.end(JSON.stringify({ message: "Invalid JSON" }));
         }
-
         break;
       default:
         res.writeHead(405, { "Content-Type": "application/json" });
@@ -118,6 +126,6 @@ function normalizeRoute(method?: string, path?: string): string {
   if (id !== null) {
     return `${method} /users/:id`;
   }
-  
+
   return `${method} ${path}`;
 }
