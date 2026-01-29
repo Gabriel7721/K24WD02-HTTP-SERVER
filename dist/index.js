@@ -11,6 +11,10 @@ const server = createServer(async (req, res) => {
             res.writeHead(200);
             res.end("Welcome to my http server!");
             break;
+        case "GET /users":
+            res.writeHead(200);
+            res.end(JSON.stringify(users));
+            break;
         default:
             res.writeHead(405, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Method not allowed" }));
